@@ -36,16 +36,16 @@ genuinely learned the real structure in the data, even though "guess the one exa
 ## Architecture
 
 ```
-                     ┌─────────────────────────┐
-                     │   Training (Colab)       │
-                     │   AgroPredict_V4_final    │
-                     │   .ipynb                  │
+                     ┌────────────────────────────┐
+                     │   Training (Colab)         │
+                     │   AgroPredict_V4_final     │
+                     │   .ipynb                   │
                      │                            │
                      │  EDA → feature engineering │
                      │  → crop-cluster analysis   │
                      │  → 7-model comparison      │
                      │  → XGBoost tuning          │
-                     │  → SHAP explainability      │
+                     │  → SHAP explainability     │
                      └───────────┬────────────────┘
                                  │ exports
                  ┌───────────────┼────────────────┐
@@ -63,7 +63,7 @@ genuinely learned the real structure in the data, even though "guess the one exa
                      └───────────┬───────────────┘
                                  │ calls
                                  ▼             ┌───────────────────┐
-                     ┌─────────────────────────┤  OpenWeather API    │
+                     ┌─────────────────────────┤  OpenWeather API  │
                      │  fetch()                └───────────────────┘
                      ▼
                      ┌───────────────────────────┐
