@@ -454,8 +454,8 @@
 
 <script>
 (function () {
-  // Change this to wherever your FastAPI backend is actually running.
-  const API_BASE_URL = "http://127.0.0.1:8000";
+  const configuredApiUrl = new URLSearchParams(window.location.search).get("api");
+  const API_BASE_URL = (configuredApiUrl || "http://127.0.0.1:8000").replace(/\/$/, "");
 
   const modeManualBtn = document.getElementById("mode-manual");
   const modeAutoBtn = document.getElementById("mode-auto");

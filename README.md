@@ -145,6 +145,27 @@ from the `frontend/` folder if you hit CORS issues with `file://`). It talks to 
 `http://127.0.0.1:8000` by default — change `API_BASE_URL` near the top of the `<script>` tag
 if you deploy the backend elsewhere.
 
+### 4. Deploy the frontend on GitHub Pages
+
+This repository includes a GitHub Actions workflow at
+`.github/workflows/deploy-pages.yml`. On GitHub, open **Settings → Pages**, choose
+**GitHub Actions** as the source, and push to `main`. GitHub will publish the contents of
+`frontend/` at:
+
+```text
+https://Satyam-ptl.github.io/AgroPredict_V1/
+```
+
+GitHub Pages hosts the static frontend only. Deploy the FastAPI backend separately, then
+open the Pages URL with the backend URL in the `api` query parameter:
+
+```text
+https://Satyam-ptl.github.io/AgroPredict_V1/?api=https%3A%2F%2Fyour-api-host.example.com
+```
+
+The backend must allow the Pages origin in its CORS settings and must have the model artifacts
+and `OPENWEATHER_API_KEY` configured as deployment secrets.
+
 ### Getting the model file
 
 `model_final_pipeline.joblib` isn't committed to this repo (model files don't belong in git
