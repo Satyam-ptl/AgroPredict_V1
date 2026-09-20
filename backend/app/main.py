@@ -22,7 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from .model_registry import registry
 from .schemas import CropConditionsInput, CropConditionsAutoInput, PredictionResponse, CropSuggestion
 from .weather import resolve_weather
-
+from dotenv import load_dotenv
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
