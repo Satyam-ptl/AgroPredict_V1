@@ -1,0 +1,31 @@
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Model artifacts — do not commit trained model files or checkpoints to git history.
+# Use Git LFS, cloud storage, or a release asset instead; see README "Getting the model file".
+backend/artifacts/*.joblib
+backend/artifacts/*.json
+!backend/artifacts/.gitkeep
+
+# Training checkpoints (resumable-run state, regenerable from a fresh run)
+*_checkpoint.jsonl
+*_checkpoint_v*.jsonl
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

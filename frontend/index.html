@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroPredict — What can grow here?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-bg: #F1ECDD;
+    --color-surface: #FBF8F0;
+    --color-surface-raised: #FFFDF7;
+    --color-ink: #2B2417;
+    --color-ink-soft: #6B6250;
+    --color-green: #445E3C;
+    --color-green-deep: #2E4229;
+    --color-green-pale: #E4E9DD;
+    --color-gold: #B87A20;
+    --color-gold-pale: #F3E4C6;
+    --color-rust: #8C3B2E;
+    --color-rust-pale: #F1DCD6;
+    --color-border: #D9D0B8;
+    --color-border-strong: #B7AB8A;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --radius: 4px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--color-green-deep); }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- Header ---------- */
+  header.site {
+    border-bottom: 1px solid var(--color-border);
+    padding: 22px 0;
+  }
+  header.site .wrap {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-green-deep);
+  }
+  .wordmark span { color: var(--color-gold); }
+  nav.site-nav {
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+  nav.site-nav a { margin-left: 20px; text-decoration: none; border-bottom: 1px solid transparent; }
+  nav.site-nav a:hover { border-bottom-color: currentColor; }
+
+  /* ---------- Hero / intro ---------- */
+  .intro {
+    padding: 48px 0 32px;
+  }
+  .intro h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    max-width: 20ch;
+  }
+  .intro p {
+    max-width: 58ch;
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  /* ---------- Main two-pane layout ---------- */
+  main.tool {
+    padding-bottom: 64px;
+  }
+  .panes {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 40px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .panes { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Form panel ---------- */
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .panel h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin: 0 0 4px;
+  }
+  .panel .panel-sub {
+    color: var(--color-ink-soft);
+    font-size: 0.92rem;
+    margin: 0 0 20px;
+  }
+
+  .mode-toggle {
+    display: flex;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 22px;
+    width: fit-content;
+  }
+  .mode-toggle button {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: var(--color-ink-soft);
+    cursor: pointer;
+  }
+  .mode-toggle button + button { border-left: 1px solid var(--color-border-strong); }
+  .mode-toggle button[aria-pressed="true"] {
+    background: var(--color-green-deep);
+    color: var(--color-surface-raised);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 14px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.span-2 { grid-column: 1 / -1; }
+  .field label {
+    font-size: 0.82rem;
+    color: var(--color-ink-soft);
+    font-weight: 500;
+  }
+  .field input, .field select {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    padding: 9px 10px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius);
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+  }
+  .field input:focus, .field select:focus, .mode-toggle button:focus-visible, .location-toggle:focus-visible, button.submit:focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 1px;
+  }
+  .field .unit { font-size: 0.78rem; color: var(--color-ink-soft); font-weight: 400; }
+
+  .location-block {
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--color-border);
+  }
+  .location-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-green-deep);
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  button.submit {
+    margin-top: 22px;
+    width: 100%;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.98rem;
+    padding: 13px 18px;
+    background: var(--color-green-deep);
+    color: var(--color-surface-raised);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  button.submit:hover { background: var(--color-green); }
+  button.submit:disabled { background: var(--color-border-strong); cursor: wait; }
+
+  .form-error {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--color-rust-pale);
+    border: 1px solid var(--color-rust);
+    color: var(--color-rust);
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    display: none;
+  }
+  .form-error.visible { display: block; }
+
+  /* ---------- Results panel ---------- */
+  .results-panel { min-height: 420px; }
+
+  .empty-state {
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--color-ink-soft);
+  }
+  .empty-state svg { margin-bottom: 14px; }
+  .empty-state p { margin: 0; font-size: 0.95rem; max-width: 34ch; margin-inline: auto; }
+
+  .loading-state {
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--color-ink-soft);
+    font-size: 0.95rem;
+  }
+
+  .results-list { display: none; opacity: 0; transform: translateY(6px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .results-list.visible { display: block; opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .results-list { transition: none; }
+  }
+
+  .results-meta {
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .crop-card {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .crop-card:first-of-type { padding-top: 0; }
+  .crop-card:last-of-type { border-bottom: none; }
+
+  .crop-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .crop-name {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  .crop-prob {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--color-green-deep);
+    white-space: nowrap;
+  }
+
+  .prob-track {
+    margin-top: 8px;
+    height: 6px;
+    background: var(--color-green-pale);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .prob-fill { height: 100%; background: var(--color-green); border-radius: 3px; }
+
+  .crop-cluster {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--color-ink-soft);
+  }
+  .crop-cluster .cluster-id {
+    font-family: var(--font-mono);
+    background: var(--color-gold-pale);
+    color: var(--color-gold);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+  }
+  .alt-chips { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .alt-chip {
+    font-size: 0.8rem;
+    padding: 3px 9px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 999px;
+    color: var(--color-ink-soft);
+  }
+
+  /* ---------- Footer ---------- */
+  footer.site {
+    border-top: 1px solid var(--color-border);
+    padding: 24px 0 40px;
+    color: var(--color-ink-soft);
+    font-size: 0.85rem;
+  }
+  footer.site p { max-width: 70ch; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="wordmark">Agro<span>Predict</span></div>
+    <nav class="site-nav">
+      <a href="#" id="api-status-link">Checking API…</a>
+    </nav>
+  </div>
+</header>
+
+<div class="intro wrap">
+  <h1>What can grow here?</h1>
+  <p>Enter your soil readings and conditions. AgroPredict returns a ranked shortlist of suitable crops, built from Indian agricultural data — not a single guess, since several crops are often equally well suited to the same conditions.</p>
+</div>
+
+<main class="tool wrap">
+  <div class="panes">
+
+    <!-- FORM PANEL -->
+    <section class="panel" aria-label="Field conditions form">
+      <h2>Your conditions</h2>
+      <p class="panel-sub">Soil test readings plus climate for your field.</p>
+
+      <div class="mode-toggle" role="tablist" aria-label="Weather input mode">
+        <button type="button" id="mode-manual" aria-pressed="true" role="tab">Enter weather manually</button>
+        <button type="button" id="mode-auto" aria-pressed="false" role="tab">Look up weather</button>
+      </div>
+
+      <form id="predict-form">
+        <div class="field-grid">
+          <div class="field">
+            <label for="n">Nitrogen (N) <span class="unit">kg/ha</span></label>
+            <input type="number" id="n" name="nitrogen_N_kg_ha" step="0.1" min="0" max="500" required>
+          </div>
+          <div class="field">
+            <label for="p">Phosphorus (P) <span class="unit">kg/ha</span></label>
+            <input type="number" id="p" name="phosphorus_P_kg_ha" step="0.1" min="0" max="500" required>
+          </div>
+          <div class="field">
+            <label for="k">Potassium (K) <span class="unit">kg/ha</span></label>
+            <input type="number" id="k" name="potassium_K_kg_ha" step="0.1" min="0" max="500" required>
+          </div>
+          <div class="field">
+            <label for="ph">Soil pH</label>
+            <input type="number" id="ph" name="soil_pH" step="0.1" min="0" max="14" required>
+          </div>
+          <div class="field">
+            <label for="moisture">Soil moisture <span class="unit">%</span></label>
+            <input type="number" id="moisture" name="soil_moisture_percent" step="0.1" min="0" max="100" required>
+          </div>
+          <div class="field">
+            <label for="soil-type">Soil type</label>
+            <select id="soil-type" name="soil_type" required>
+              <option value="">Loading…</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label for="season">Season</label>
+            <select id="season" name="season" required>
+              <option value="">Loading…</option>
+            </select>
+          </div>
+
+          <!-- Manual-weather-only fields -->
+          <div class="field weather-manual">
+            <label for="temp">Temperature <span class="unit">°C</span></label>
+            <input type="number" id="temp" name="temperature_C" step="0.1" min="-10" max="60">
+          </div>
+          <div class="field weather-manual">
+            <label for="humidity">Humidity <span class="unit">%</span></label>
+            <input type="number" id="humidity" name="humidity_percent" step="0.1" min="0" max="100">
+          </div>
+          <div class="field weather-manual span-2">
+            <label for="rainfall">Rainfall <span class="unit">mm</span></label>
+            <input type="number" id="rainfall" name="rainfall_mm" step="0.1" min="0" max="5000">
+          </div>
+
+          <!-- Auto-weather-only fields -->
+          <div class="field weather-auto span-2" style="display:none;">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" placeholder="e.g. Nagpur">
+            <button type="button" class="location-toggle" id="use-coords-toggle" style="margin-top:8px;">Use coordinates instead</button>
+          </div>
+          <div class="field weather-auto weather-coords" style="display:none;">
+            <label for="lat">Latitude</label>
+            <input type="number" id="lat" name="latitude" step="0.0001" min="-90" max="90">
+          </div>
+          <div class="field weather-auto weather-coords" style="display:none;">
+            <label for="lon">Longitude</label>
+            <input type="number" id="lon" name="longitude" step="0.0001" min="-180" max="180">
+          </div>
+        </div>
+
+        <button type="submit" class="submit" id="submit-btn">Get recommendations</button>
+        <div class="form-error" id="form-error"></div>
+      </form>
+    </section>
+
+    <!-- RESULTS PANEL -->
+    <section class="panel results-panel" aria-label="Recommended crops" aria-live="polite">
+      <h2>Recommended crops</h2>
+      <p class="panel-sub">A ranked shortlist, most suitable first.</p>
+
+      <div class="empty-state" id="empty-state">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 34V18" stroke="#B87A20" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M20 18C20 11 25 7 31 7C31 13 27 18 20 18Z" fill="#E4E9DD" stroke="#445E3C" stroke-width="1.4"/>
+          <path d="M20 24C20 18 15 15 10 15C10 21 14 24 20 24Z" fill="#E4E9DD" stroke="#445E3C" stroke-width="1.4"/>
+        </svg>
+        <p>Fill in your field's conditions and submit to see which crops suit them best.</p>
+      </div>
+
+      <div class="loading-state" id="loading-state" style="display:none;">Checking conditions against 140 crops…</div>
+
+      <div class="results-list" id="results-list">
+        <div class="results-meta" id="results-meta"></div>
+        <div id="results-items"></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>Recommendations rank crops by predicted suitability for the conditions entered. Crops marked as "agronomically similar" share close climate and soil requirements — either is often a reasonable choice. This tool supports a decision; it doesn't replace local agricultural extension advice.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Change this to wherever your FastAPI backend is actually running.
+  const API_BASE_URL = "http://127.0.0.1:8000";
+
+  const modeManualBtn = document.getElementById("mode-manual");
+  const modeAutoBtn = document.getElementById("mode-auto");
+  const weatherManualFields = document.querySelectorAll(".weather-manual");
+  const weatherAutoFields = document.querySelectorAll(".weather-auto");
+  const weatherCoordsFields = document.querySelectorAll(".weather-coords");
+  const useCoordsToggle = document.getElementById("use-coords-toggle");
+  const cityField = document.getElementById("city").closest(".field");
+
+  const form = document.getElementById("predict-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const formError = document.getElementById("form-error");
+
+  const emptyState = document.getElementById("empty-state");
+  const loadingState = document.getElementById("loading-state");
+  const resultsList = document.getElementById("results-list");
+  const resultsMeta = document.getElementById("results-meta");
+  const resultsItems = document.getElementById("results-items");
+
+  const apiStatusLink = document.getElementById("api-status-link");
+
+  let mode = "manual"; // "manual" | "auto"
+  let usingCoords = false;
+
+  function setMode(newMode) {
+    mode = newMode;
+    modeManualBtn.setAttribute("aria-pressed", String(mode === "manual"));
+    modeAutoBtn.setAttribute("aria-pressed", String(mode === "auto"));
+    weatherManualFields.forEach(el => { el.style.display = mode === "manual" ? "" : "none"; });
+    weatherAutoFields.forEach(el => { el.style.display = mode === "auto" ? "" : "none"; });
+    // required toggling so hidden fields don't block submission
+    document.getElementById("temp").required = mode === "manual";
+    document.getElementById("humidity").required = mode === "manual";
+    document.getElementById("rainfall").required = mode === "manual";
+  }
+  modeManualBtn.addEventListener("click", () => setMode("manual"));
+  modeAutoBtn.addEventListener("click", () => setMode("auto"));
+
+  useCoordsToggle.addEventListener("click", () => {
+    usingCoords = !usingCoords;
+    weatherCoordsFields.forEach(el => { el.style.display = usingCoords ? "" : "none"; });
+    cityField.style.display = usingCoords ? "none" : "";
+    useCoordsToggle.textContent = usingCoords ? "Use a city name instead" : "Use coordinates instead";
+  });
+
+  function showError(message) {
+    formError.textContent = message;
+    formError.classList.add("visible");
+  }
+  function clearError() {
+    formError.textContent = "";
+    formError.classList.remove("visible");
+  }
+
+  async function loadOptions() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/options`);
+      if (!res.ok) throw new Error("options request failed");
+      const data = await res.json();
+      populateSelect("soil-type", data.soil_type || []);
+      populateSelect("season", data.season || []);
+      apiStatusLink.textContent = "API connected";
+    } catch (err) {
+      apiStatusLink.textContent = "API not reachable";
+      showError(`Couldn't reach the AgroPredict API at ${API_BASE_URL}. Make sure the backend is running, then refresh this page.`);
+      document.getElementById("soil-type").innerHTML = '<option value="">Unavailable</option>';
+      document.getElementById("season").innerHTML = '<option value="">Unavailable</option>';
+    }
+  }
+  function populateSelect(id, values) {
+    const select = document.getElementById(id);
+    select.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select…";
+    select.appendChild(placeholder);
+    values.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+      select.appendChild(opt);
+    });
+  }
+
+  function collectPayload() {
+    const fd = new FormData(form);
+    const base = {
+      nitrogen_N_kg_ha: Number(fd.get("nitrogen_N_kg_ha")),
+      phosphorus_P_kg_ha: Number(fd.get("phosphorus_P_kg_ha")),
+      potassium_K_kg_ha: Number(fd.get("potassium_K_kg_ha")),
+      soil_pH: Number(fd.get("soil_pH")),
+      soil_moisture_percent: Number(fd.get("soil_moisture_percent")),
+      soil_type: fd.get("soil_type"),
+      season: fd.get("season"),
+    };
+
+    if (mode === "manual") {
+      return {
+        endpoint: "/predict",
+        body: {
+          ...base,
+          temperature_C: Number(fd.get("temperature_C")),
+          humidity_percent: Number(fd.get("humidity_percent")),
+          rainfall_mm: Number(fd.get("rainfall_mm")),
+        },
+      };
+    }
+
+    const autoBody = { ...base };
+    if (usingCoords) {
+      autoBody.latitude = Number(fd.get("latitude"));
+      autoBody.longitude = Number(fd.get("longitude"));
+    } else {
+      autoBody.city = fd.get("city");
+    }
+    return { endpoint: "/predict/auto", body: autoBody };
+  }
+
+  function renderResults(data) {
+    resultsMeta.textContent = data.weather_source
+      ? `Weather looked up from ${data.weather_source.replace("openweather:", "")}.`
+      : "Based on the conditions you entered.";
+
+    resultsItems.innerHTML = "";
+    data.shortlist.forEach((item, i) => {
+      const pct = Math.round(item.probability * 1000) / 10;
+      const card = document.createElement("div");
+      card.className = "crop-card";
+      card.innerHTML = `
+        <div class="crop-head">
+          <span class="crop-name">${i + 1}. ${capitalize(item.crop)}</span>
+          <span class="crop-prob">${pct}%</span>
+        </div>
+        <div class="prob-track"><div class="prob-fill" style="width:${pct}%"></div></div>
+        <div class="crop-cluster">
+          Cluster <span class="cluster-id">${item.cluster}</span>
+          ${item.cluster_alternatives.length ? `<div class="alt-chips">${item.cluster_alternatives.map(c => `<span class="alt-chip">${capitalize(c)}</span>`).join("")}</div>` : ""}
+        </div>
+      `;
+      resultsItems.appendChild(card);
+    });
+
+    emptyState.style.display = "none";
+    loadingState.style.display = "none";
+    resultsList.classList.add("visible");
+  }
+
+  function capitalize(s) {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearError();
+
+    const { endpoint, body } = collectPayload();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Checking…";
+    emptyState.style.display = "none";
+    resultsList.classList.remove("visible");
+    loadingState.style.display = "block";
+
+    try {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        const detail = typeof errBody.detail === "string" ? errBody.detail : "The API rejected this request.";
+        throw new Error(detail);
+      }
+
+      const data = await res.json();
+      renderResults(data);
+    } catch (err) {
+      loadingState.style.display = "none";
+      emptyState.style.display = "block";
+      showError(err.message || "Something went wrong reaching the API.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Get recommendations";
+    }
+  });
+
+  setMode("manual");
+  loadOptions();
+})();
+</script>
+
+</body>
+</html>
